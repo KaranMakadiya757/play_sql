@@ -1,4 +1,5 @@
 import sql from "mysql2/promise";
+import { runSchema } from "./runSchema.js";
 
 const pool = sql.createPool({
   host: process.env.DB_HOST,
@@ -15,6 +16,7 @@ const connectDB = async () => {
     const connection = await pool.getConnection()
     console.log("MySQL connected ✅");
     connection.release();
+    await runSchema();
   } catch (error) {
     console.error("MySQL connection error ❌", error);
     process.exit(1);

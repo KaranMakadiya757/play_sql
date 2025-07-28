@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { upload } from '../middlewares/multer.middleware.js'
-import { verifyJWT } from "../middlewares/auth.middleware.js";
+import { verifyJWT } from "../Middlewares/auth.middleware.js";
 import {
     changeCurrentPassword,
     getCurrentUser,
@@ -14,7 +14,7 @@ import {
     deleteUser,
     sendOTP,
     verifyOTP
-} from "../controllers/user.controller.js";
+} from "../Controllers/user.controller.js";
 
 import {
     changepasswordValidationSchema,
