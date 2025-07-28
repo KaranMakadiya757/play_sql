@@ -34,18 +34,18 @@ const getAllVideos = asyncHandler(async (req, res) => {
         `
         SELECT 
             v.*,
+            COUNT(l.id) AS likes,
             JSON_OBJECT(
                 'id', u.id,
                 'username', u.username,
                 'avatar', u.avatar
-            ) AS owner,
-            COUNT(l.id) AS likes
+            ) AS owner
         FROM 
             videos v
         LEFT JOIN 
             users u ON v.owner = u.id
         LEFT JOIN 
-            likes l ON v.id = l.video_id
+            likes l ON v.id = l.video
         WHERE 
             v.is_published = true
             AND v.title LIKE CONCAT('%', ?, '%')
@@ -128,24 +128,24 @@ const getVideoById = asyncHandler(async (req, res) => {
         `
         SELECT 
             v.*,
+            COUNT(l.id) AS likes,
             JSON_OBJECT(
                 'id', u.id,
                 'username', u.username,
                 'avatar', u.avatar
-            ) AS owner,
-            COUNT(l.id) AS likes
+            ) AS owner
         FROM 
             videos v
         LEFT JOIN 
             users u ON v.owner = u.id
         LEFT JOIN 
-            likes l ON v.id = l.video_id
+            likes l ON v.id = l.video
         WHERE 
             v.id = ?
         GROUP BY 
             v.id, u.id, u.username, u.avatar
         `,
-        [req.video._id]
+        [req.video.id]
     );
 
     if (videos?.length == 0) throw new ApiError(404, "Video Not Found");
