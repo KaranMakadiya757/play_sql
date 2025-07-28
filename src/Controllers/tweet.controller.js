@@ -22,7 +22,7 @@ const getUserTweets = asyncHandler(async (req, res) => {
         GROUP BY 
             t.id
         `,
-        [req.user._id]
+        [req.user.id]
     );
 
 
