@@ -1,7 +1,7 @@
 import cors from "cors";
 import express from "express";
 import cookieparser from "cookie-parser";
-// import errorHandler from "./Middlewares/errorhandler.middleware.js";
+import errorHandler from "./Middlewares/errorhandler.middleware.js";
 
 // EXPRESS APP CREATION 
 const app = express()
@@ -41,6 +41,6 @@ app.use(cookieparser())
 // app.use("/api/v1/dashboard", dashboardRouter)
 
 
-// app.use(errorHandler)
+app.use(errorHandler)
 
 export { app }
