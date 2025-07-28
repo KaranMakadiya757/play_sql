@@ -1,24 +1,24 @@
-import { Sequelize } from "sequelize";
+import sql from "mysql2/promise";
 
-const sequelize = new Sequelize(
-  process.env.DB_NAME,     // Database name
-  process.env.DB_USER,     // Username
-  process.env.DB_PASS, // Password
-  {
-    host: process.env.DB_HOST || 'localhost',
-    dialect: "mysql",
-    logging: false, // set to true to see raw SQL queries
-  }
-);
+const pool = sql.createPool({
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0,
+})
 
 const connectDB = async () => {
   try {
-    await sequelize.authenticate();
+    const connection = await pool.getConnection()
     console.log("MySQL connected ✅");
+    connection.release();
   } catch (error) {
     console.error("MySQL connection error ❌", error);
     process.exit(1);
   }
 };
 
-export { sequelize, connectDB };
+export { connectDB, pool };
