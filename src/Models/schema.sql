@@ -71,3 +71,13 @@ CREATE TABLE IF NOT EXISTS likes (
   FOREIGN KEY (tweet) REFERENCES tweets(id) ON DELETE CASCADE,
   FOREIGN KEY (liked_by) REFERENCES users(id) ON DELETE CASCADE
 );
+-- subscription table
+CREATE TABLE IF NOT EXISTS subscriptions (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  subscriber INT NOT NULL,
+  channel INT NOT NULL,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (subscriber) REFERENCES users(id) ON DELETE CASCADE,
+  FOREIGN KEY (channel) REFERENCES users(id) ON DELETE CASCADE,
+  UNIQUE (subscriber, channel)
+);
