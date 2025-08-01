@@ -7,29 +7,17 @@ import { deleteFromCloudinary, uploadOnCloudinary } from "../Utils/fileOperation
 
 // ADD LIKE COUNT IN GET VIDEOS BY ID
 const getAllVideos = asyncHandler(async (req, res) => {
-    // Get The search params from the req query
     const {
-        // page = 1,
-        // limit = 10,
+        page = 1,
+        limit = 10,
         query = "",
         sortBy = "title",
-        sortType = 1
-    } = req.query
+        sortType = "1"
+    } = req.query;
 
-    // Configure Pagination
-    // const option = {
-    //     page,
-    //     limit,
-    //     customLabels: {
-    //         docs: "videos",
-    //         totalDocs: 'totalVideos',
-    //     }
-    // }
+    const offset = (page - 1) * limit;
 
-    // Throw error if sorting field is not a valid field
-    // if (!Video.schema.path(sortBy)) throw new ApiError(400, "Please provide a valid field name for sorting");
-
-    // create pipelie for getting filtered videos
+    // Main video query with pagination
     const [videos] = await pool.query(
         `
         SELECT 
@@ -53,22 +41,39 @@ const getAllVideos = asyncHandler(async (req, res) => {
             v.id, u.id, u.username, u.avatar
         ORDER BY 
             ${sortBy} ${sortType === "1" ? "ASC" : "DESC"}
+        LIMIT ? OFFSET ?
+        `,
+        [query, Number(limit), Number(offset)]
+    );
+
+    // Total count query
+    const [countResult] = await pool.query(
+        `
+        SELECT COUNT(*) AS total 
+        FROM videos 
+        WHERE is_published = true 
+        AND title LIKE CONCAT('%', ?, '%')
         `,
         [query]
     );
 
-    // Apply pagination to the videos and fetch from database
-    // const videos = await Video.aggregatePaginate(aggregateVideos, option);
+    const total = countResult[0]?.total || 0;
+    const totalPages = Math.ceil(total / limit);
 
-    // Throw error if videos is not found
-    if (!videos) throw new ApiError(500, "server error");
-
-    // return response
-    return res
-        .status(200)
-        .json(new ApiResponse(200, videos, "Videos fetched sucessfully"));
-
-})
+    return res.status(200).json(
+        new ApiResponse(
+            200,
+            {
+                videos,
+                page: Number(page),
+                limit: Number(limit),
+                total,
+                totalPages
+            },
+            "Videos fetched successfully"
+        )
+    );
+});
 
 // Upload a Video
 const uploadVideo = asyncHandler(async (req, res) => {

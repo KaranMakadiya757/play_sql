@@ -6,21 +6,11 @@ import { ApiResponse } from "../Utils/apiResponse.js"
 
 // Get Comment for a video
 const getVideoComments = asyncHandler(async (req, res) => {
+    
+    const { page = 1, limit = 10 } = req.query;
+    const offset = (page - 1) * limit;
 
-    // Fetch Page and Limit from request params
-    // const { page = 1, limit = 10 } = req.query;
-
-    // // Configure Pagination
-    // const option = {
-    //     page,
-    //     limit,
-    //     customLabels: {
-    //         docs: "comments",
-    //         totalDocs: 'totalComments',
-    //     }
-    // }
-
-    // create aggreagation pipeline for comments
+    // Main paginated comments query
     const [comments] = await pool.query(
         `
         SELECT 
@@ -38,23 +28,36 @@ const getVideoComments = asyncHandler(async (req, res) => {
             AND c.video = ?
         GROUP BY 
             c.id, c.content, c.created_at, c.updated_at
+        ORDER BY 
+            c.created_at DESC
+        LIMIT ? OFFSET ?
+        `,
+        [req.user.id, req.video.id, Number(limit), Number(offset)]
+    );
+
+    // Total count of matching comments
+    const [countResult] = await pool.query(
+        `
+        SELECT COUNT(*) AS total
+        FROM comments
+        WHERE owner = ? AND video = ?
         `,
         [req.user.id, req.video.id]
     );
 
+    const total = countResult[0]?.total || 0;
+    const totalPages = Math.ceil(total / limit);
 
-    // Apply pagination to the comments and fetch from database
-    // const comments = await Comment.aggregatePaginate(aggregatedComments, option);
-
-    // Throw error if comments are not found
-    if (!comments) throw new ApiError(500, "server error");
-
-    // return response
-    return res
-        .status(200)
-        .json(new ApiResponse(200, comments, "Comments fetched sucessfully"));
-
-})
+    return res.status(200).json(
+        new ApiResponse(200, {
+            comments,
+            page: Number(page),
+            limit: Number(limit),
+            total,
+            totalPages
+        }, "Comments fetched successfully")
+    );
+});
 
 // Add comment
 const addComment = asyncHandler(async (req, res) => {
