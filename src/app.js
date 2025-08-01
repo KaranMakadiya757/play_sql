@@ -1,6 +1,7 @@
 import cors from "cors";
 import express from "express";
 import cookieparser from "cookie-parser";
+import { swaggerUi, swaggerSpec } from "./swagger.js";
 import errorHandler from "./Middlewares/errorhandler.middleware.js";
 
 // EXPRESS APP CREATION 
@@ -18,6 +19,10 @@ app.use(express.static("public"))
 app.use(cookieparser())
 
 
+// Swagger Docs
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
+
 // ROUTER IMPORT
 import userRouter from "./routes/user.routes.js"
 import healthcheckRouter from "./routes/healthcheck.routes.js"
@@ -27,7 +32,6 @@ import videoRouter from "./routes/videos.routes.js"
 import commentRouter from "./routes/comment.routes.js"
 import likeRouter from "./routes/like.routes.js"
 import playlistRouter from "./routes/playlist.routes.js"
-// import dashboardRouter from "./routes/dashboard.routes.js"
 
 
 app.use("/api/v1/user", userRouter)
@@ -38,7 +42,6 @@ app.use("/api/v1/videos", videoRouter)
 app.use("/api/v1/comments", commentRouter)
 app.use("/api/v1/likes", likeRouter)
 app.use("/api/v1/playlist", playlistRouter)
-// app.use("/api/v1/dashboard", dashboardRouter)
 
 
 app.use(errorHandler)
