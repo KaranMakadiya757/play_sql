@@ -83,6 +83,18 @@ const db = {
     const sql = `DELETE FROM \`${table}\` WHERE id = ?`;
     const [result] = await pool.query(sql, [id]);
     return result.affectedRows > 0;
+  },
+
+  async deleteOne(table, conditions = {}) {
+    const keys = Object.keys(conditions);
+    const values = Object.values(conditions);
+
+    if (!keys.length) throw new Error("No conditions provided");
+
+    const whereClause = keys.map((key) => `\`${key}\` = ?`).join(" AND ");
+    const sql = `DELETE FROM \`${table}\` WHERE ${whereClause} LIMIT 1`;
+    const [result] = await pool.query(sql, values);
+    return result.affectedRows > 0;
   }
 };
 

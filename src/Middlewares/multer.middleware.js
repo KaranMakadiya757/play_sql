@@ -1,7 +1,7 @@
 import multer from "multer"
 import path from "path"
 import { v4 as uuidv4 } from "uuid"
-import { ApiError } from "../utils/apiError.js"
+import { ApiError } from "../Utils/apiError.js"
 
 const storage = multer.diskStorage({
 	destination: function (req, file, cb) {

@@ -27,7 +27,7 @@ const playlistValidationSchema = Joi.object({
 
     videos: Joi.array()
         .optional()
-        .items(Joi.string().hex().length(24).messages({
+        .items(Joi.number().integer().messages({
             'string.base': 'Each video ID must be a string.',
             'string.hex': 'Each video ID must be a valid ObjectId.',
             'string.length': 'Each video ID must be 24 characters long.'

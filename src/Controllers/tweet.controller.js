@@ -1,6 +1,6 @@
 import db from "../Utils/dbHelpers.js";
 import { pool } from "../DB/index.js";
-import { ApiError } from "../utils/apiError.js";
+import { ApiError } from "../Utils/apiError.js";
 import { ApiResponse } from "../Utils/apiResponse.js";
 import { asyncHandler } from "../Utils/asyncHandler.js";
 

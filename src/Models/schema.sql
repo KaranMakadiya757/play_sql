@@ -81,3 +81,22 @@ CREATE TABLE IF NOT EXISTS subscriptions (
   FOREIGN KEY (channel) REFERENCES users(id) ON DELETE CASCADE,
   UNIQUE (subscriber, channel)
 );
+-- playlist table
+CREATE TABLE IF NOT EXISTS playlists (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  description TEXT NOT NULL,
+  owner INT NOT NULL,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  FOREIGN KEY (owner) REFERENCES users(id) ON DELETE CASCADE
+);
+-- playlist_videos table
+CREATE TABLE IF NOT EXISTS playlist_videos (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  playlist INT NOT NULL,
+  video INT NOT NULL,
+  FOREIGN KEY (playlist) REFERENCES playlists(id) ON DELETE CASCADE,
+  FOREIGN KEY (video) REFERENCES videos(id) ON DELETE CASCADE,
+  UNIQUE (playlist, video)
+);

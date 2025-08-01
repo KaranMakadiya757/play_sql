@@ -2,7 +2,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import db from "../Utils/dbHelpers.js";
 import { cookieOption } from "../constants.js"
-import { ApiError } from "../utils/apiError.js";
+import { ApiError } from "../Utils/apiError.js";
 import { sendEmail } from "../Utils/sendmail.js";
 import { ApiResponse } from "../Utils/apiResponse.js";
 import { asyncHandler } from "../Utils/asyncHandler.js";
