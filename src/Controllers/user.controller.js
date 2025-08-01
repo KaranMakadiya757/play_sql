@@ -7,7 +7,7 @@ import { sendEmail } from "../Utils/sendmail.js";
 import { ApiResponse } from "../Utils/apiResponse.js";
 import { asyncHandler } from "../Utils/asyncHandler.js";
 import { otpTemplate } from "../Templates/otpTemplate.js";
-import { deleteFromCloudinary, uploadOnCloudinary } from "../Utils/fileOperation.js";
+import { deleteFolderFromCloudinary, deleteFromCloudinary, uploadOnCloudinary } from "../Utils/fileOperation.js";
 import { welcomeTemplate } from "../Templates/welcomeTemplate.js";
 import generateAccessAndRefreshToken from "../Utils/generateTokens.js";
 
@@ -475,6 +475,7 @@ const deleteUser = asyncHandler(async (req, res) => {
     // Delete images on cloudinary
     await deleteFromCloudinary(req.user.avatar)
     await deleteFromCloudinary(req.user.coverimage)
+    await deleteFolderFromCloudinary(`users/${req.user.id}`)
 
     // Delete the user from db
     const deletedUser = await db.delete("users", req.user.id);
