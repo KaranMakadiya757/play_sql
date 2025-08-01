@@ -37,5 +37,40 @@ const deleteFromCloudinary = async (publicId, resourceType = "image") => {
     }
 };
 
+const deleteFolderFromCloudinary = async (folderPath) => {
+    try {
+        const resourceTypes = ["image", "video"];
+        let deleted = [];
 
-export { uploadOnCloudinary, deleteFromCloudinary };
+        for (const type of resourceTypes) {
+            const { resources } = await cloudinary.api.resources({
+                type: "upload",
+                prefix: `${folderPath}/`,
+                resource_type: type,
+                max_results: 500,
+            });
+
+            if (resources.length) {
+                const publicIds = resources.map((r) => r.public_id);
+                const result = await cloudinary.api.delete_resources(publicIds, {
+                    resource_type: type,
+                });
+                deleted.push({ type, result });
+                console.log(`Deleted ${publicIds.length} ${type} files from ${folderPath}`);
+            }
+        }
+
+        return deleted.length
+            ? { success: true, deleted }
+            : { success: false, message: "No resources to delete" };
+    } catch (error) {
+        console.error("Folder Deletion Error:", error);
+        return { success: false, error };
+    }
+};
+
+export {
+    uploadOnCloudinary,
+    deleteFromCloudinary,
+    deleteFolderFromCloudinary
+};
